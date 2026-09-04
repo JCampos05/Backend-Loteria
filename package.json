@@ -1,0 +1,36 @@
+{
+  "name": "loteria-virtual-backend",
+  "version": "1.0.0",
+  "description": "Backend de Loteria Virtual - Node.js + TypeScript + Prisma + Socket.IO",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "tsx scripts/with-db-url.ts migrate dev",
+    "db:deploy": "tsx scripts/with-db-url.ts migrate deploy",
+    "db:studio": "tsx scripts/with-db-url.ts studio",
+    "db:seed": "tsx scripts/with-db-url.ts db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.19.43",
+    "prisma": "^6.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}
