@@ -1,142 +1,140 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
-
-// -- Enums --
 enum RoomStatus {
-    WAITING
-    IN_PROGRESS
-    FINISHED
+  WAITING
+  IN_PROGRESS
+  FINISHED
 }
 
 enum GameStatus {
-    IN_PROGRESS
-    FINISHED
+  IN_PROGRESS
+  FINISHED
 }
 
-// -- Models --
-model Room{
-    id String @id @default(uuid())
-    code String @unique @db.VarChar(8)
-    status RoomStatus @default(WAITING)
-    createdAt DateTime @default(now()) @map("creted_at")
-    updateAt DateTime @updatedAt @map("updated_at")
+model Room {
+  id        String     @id @default(uuid())
+  code      String     @unique @db.VarChar(8)
+  status    RoomStatus @default(WAITING)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
 
-    players Player[]
-    games Game []
+  players Player[]
+  games   Game[]
 
-    @@map("rooms")
+  @@map("rooms")
 }
 
 model Player {
-    id String @id @default(uuid())
-    roomId String @map("room_id")
-    name String @db.VarChar(40)
-    isHost Boolean @default(false) @map("is_host")
-    connected Boolean @default(true)
-    socketId String? @map("socket_id")
-    joinedAt DateTime @default(now()) @map("joined_at")
+  id        String   @id @default(uuid())
+  roomId    String   @map("room_id")
+  name      String   @db.VarChar(40)
+  isHost    Boolean  @default(false) @map("is_host")
+  connected Boolean  @default(true)
+  socketId  String?  @map("socket_id")
+  joinedAt  DateTime @default(now()) @map("joined_at")
 
-    room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
-    boards PlayerBoard[]
-    winClaims WinClaim[]
-    gamesWon Game[] @relation("GameWinner")
+  boards   PlayerBoard[]
+  winClaims WinClaim[]
+  gamesWon Game[]        @relation("GameWinner")
 
-    @@index([roomId])
-    @@map("players")
+  @@index([roomId])
+  @@map("players")
 }
 
 model Game {
-    id String @id @default(ulid())
-    roomId String @map("room_id")
-    status GameStatus @default(IN_PROGRESS)
-    winnerId String? @map("winner_id")
-    startedAt DateTime @default(now()) @map("started_at")
-    endedAt DateTime? @map("ended_at")
+  id        String     @id @default(uuid())
+  roomId    String     @map("room_id")
+  status    GameStatus @default(IN_PROGRESS)
+  winnerId  String?    @map("winner_id")
+  startedAt DateTime   @default(now()) @map("started_at")
+  endedAt   DateTime?  @map("ended_at")
 
-    room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
-    winner Player? @relation("GameWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+  room   Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  winner Player? @relation("GameWinner", fields: [winnerId], references: [id], onDelete: SetNull)
 
-    boards PlayerBoard[]
-    calledCards CalledCard[]
-    winClaims WinClaim[]
+  boards      PlayerBoard[]
+  calledCards CalledCard[]
+  winClaims   WinClaim[]
 
-    @@index([roomId])
-    @@map("games")
+  @@index([roomId])
+  @@map("games")
 }
 
 model Card {
-    id Int @id @default(autoincrement())
-    name String @unique @db.VarChar(40)
-    imageUrl String @map("image_url")
+  id       Int    @id @default(autoincrement())
+  name     String @unique @db.VarChar(40)
+  imageUrl String @map("image_url")
 
-    board BoardCard[]
-    calledCards CalledCard[]
+  boards      BoardCard[]
+  calledCards CalledCard[]
 
-    @@map("cards")
+  @@map("cards")
 }
 
 model PlayerBoard {
-    id String @id @default(ulid())
-    gameId String @map("game_id")
-    playerId String @map("player_id")
+  id       String @id @default(uuid())
+  gameId   String @map("game_id")
+  playerId String @map("player_id")
 
-    game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
-    cards BoardCard[]
+  cards BoardCard[]
 
-    @@unique([gameId, playerId])
-    @@map("player_boards")
+  @@unique([gameId, playerId])
+  @@map("player_boards")
 }
 
 model BoardCard {
-    id String @id @default(ulid())
-    playerBoardId String @map("player_board_id")
-    cardId Int @map("card_id")
-    position Int 
-    marked Boolean @default(false)
+  id            String  @id @default(uuid())
+  playerBoardId String  @map("player_board_id")
+  cardId        Int     @map("card_id")
+  position      Int
+  marked        Boolean @default(false)
 
-    playerBoard PlayerBoard @relation(fields: [playerBoardId], references: [id], onDelete: Cascade)
-    card Card @relation(fields: [cardId], references: [id])
+  playerBoard PlayerBoard @relation(fields: [playerBoardId], references: [id], onDelete: Cascade)
+  card        Card        @relation(fields: [cardId], references: [id])
 
-    @@unique([playerBoardId, cardId])
-
-    @@unique([playerBoardId, position])
-    @@map("board_cards")
+  @@unique([playerBoardId, cardId])
+  @@unique([playerBoardId, position])
+  @@map("board_cards")
 }
 
 model CalledCard {
-    id String @id @default(ulid())
-    gameId String @map("game_id")
-    cardId Int @map("card_id")
-    callOrder Int @map("call_order") //orden de aparición
-    callAt DateTime @default(now()) @map("called_at")
+  id        String   @id @default(uuid())
+  gameId    String   @map("game_id")
+  cardId    Int      @map("card_id")
+  callOrder Int      @map("call_order")
+  calledAt  DateTime @default(now()) @map("called_at")
 
-    game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    card Card @relation(fields: [cardId], references: [id])
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  card Card @relation(fields: [cardId], references: [id])
 
-    @@unique([gameId, cardId])
-    @@unique([gameId, callOrder])
-    @@map("called_cards")
+  @@unique([gameId, cardId])
+  @@unique([gameId, callOrder])
+  @@map("called_cards")
 }
 
-model WinClaim{
-    id String @id @default(ulid())
-    gameId String @map("game_id")
-    playerId String @map("player_id")
-    isValid Boolean @map("is_valid")
-    reason String? //motivo de rechazo -> carta no encontrada // ya hay ganador
+model WinClaim {
+  id        String   @id @default(uuid())
+  gameId    String   @map("game_id")
+  playerId  String   @map("player_id")
+  isValid   Boolean  @map("is_valid")
+  reason    String?  @db.VarChar(255)
+  claimedAt DateTime @default(now()) @map("claimed_at")
 
-    game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
-    @@index([gameId])
-    @@map("win_claims")
+  @@index([gameId])
+  @@map("win_claims")
 }
