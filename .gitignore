@@ -1,1 +1,6 @@
 .env
+/node_modules
+.env.example #Futuras capas 8
+/.vscode
+/.idea
+*.md

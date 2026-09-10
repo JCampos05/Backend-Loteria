@@ -7,11 +7,11 @@
     "dev": "tsx watch src/main.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
-    "prisma:generate": "prisma generate",
-    "db:migrate": "tsx scripts/with-db-url.ts migrate dev",
-    "db:deploy": "tsx scripts/with-db-url.ts migrate deploy",
-    "db:studio": "tsx scripts/with-db-url.ts studio",
-    "db:seed": "tsx scripts/with-db-url.ts db seed"
+    "prisma:generate": "tsx src/scripts/with-db-url.ts generate",
+    "db:migrate": "tsx src/scripts/with-db-url.ts migrate dev",
+    "db:deploy": "tsx src/scripts/with-db-url.ts migrate deploy",
+    "db:studio": "tsx src/scripts/with-db-url.ts studio",
+    "db:seed": "tsx src/scripts/with-db-url.ts db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

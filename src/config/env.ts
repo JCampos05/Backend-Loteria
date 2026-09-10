@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { z } from 'zod'
-import { buildDatabaseUrl } from './database-url';
+import { buildDatabaseUrl, buildDirectDatabaseUrl } from './database-url';
 
 
 
@@ -10,7 +10,8 @@ const envSchema = z.object({
 
 
     DB_HOST: z.string().min(1, 'Se requiere DB_HOST'),
-    DB_PORT: z.coerce.number().positive().default(5432),
+    DB_PORT: z.coerce.number().positive().default(6543),
+    DB_DIRECT_PORT: z.coerce.number().positive().default(5432),
     DB_USER: z.string().min(1, 'Se requiere DB_USER'),
     DB_PASSWORD: z.string().min(1, 'Se requiere DB_PASSWORD'),
     DB_NAME: z.string().min(1, 'Se requier DB_NAME'),
@@ -42,17 +43,28 @@ function loadEnv() {
         connectionLimit: data.DB_CONNECTION_LIMIT
     });
 
+    const directUrl = buildDirectDatabaseUrl({
+        host: data.DB_HOST,
+        port: data.DB_DIRECT_PORT,
+        user: data.DB_USER,
+        password: data.DB_PASSWORD,
+        name: data.DB_NAME,
+        ssl: data.DB_SSL,
+    });
+
     return {
         nodoEnv: data?.NODE_ENV,
         isProduction: data?.NODE_ENV === 'production',
-        port: data?.PORT, 
+        port: data?.PORT,
         database: {
             host: data?.DB_HOST,
             port: data?.DB_PORT,
+            directPort: data?.DB_DIRECT_PORT,
             name: data?.DB_NAME,
             ssl: data?.DB_SSL,
             connectionLimit: data?.DB_CONNECTION_LIMIT,
             url: databaseUrl,
+            directUrl,
         },
     } as const;
 }
