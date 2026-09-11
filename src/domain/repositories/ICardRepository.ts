@@ -1,5 +1,5 @@
 
-import { Card } from '../domain/entities/card';
+import { Card } from '../entities/card';
 
 export interface ICardRepository {
   findAll(): Promise<Card[]>;
