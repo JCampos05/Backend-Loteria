@@ -1,6 +1,6 @@
 import { Game } from '../../domain/entities/game';
 import { GameStatus } from '../../domain/enums/game-status';
-import { IGameRepository } from '../../repositories/IGameRepository';
+import { IGameRepository } from '../../domain/repositories/IGameRepository';
 
 /** Transiciones de estado permitidas para una partida. */
 const ALLOWED_TRANSITIONS: Record<GameStatus, GameStatus[]> = {

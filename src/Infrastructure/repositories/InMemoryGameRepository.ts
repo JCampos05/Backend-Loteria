@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import { Game } from '../domain/entities/game';
-import { GameStatus } from '../domain/enums/game-status';
-import { IGameRepository, ICreateGameData } from './IGameRepository';
+import { Game } from '../../domain/entities/game';
+import { GameStatus } from '../../domain/enums/game-status';
+import { IGameRepository, ICreateGameData } from '../../domain/repositories/IGameRepository';
 
 /**
  * Implementación en memoria de IGameRepository.

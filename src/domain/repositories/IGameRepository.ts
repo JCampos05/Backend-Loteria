@@ -1,5 +1,5 @@
-import { Game } from '../domain/entities/game';
-import { GameStatus } from '../domain/enums/game-status';
+import { Game } from '../entities/game';
+import { GameStatus } from '../enums/game-status';
 
 export interface ICreateGameData {
     roomId: string;
