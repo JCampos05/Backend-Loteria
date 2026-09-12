@@ -6,4 +6,5 @@ export interface Room {
     status: RoomStatus;
     createdAt: Date;
     updatedAt: Date;
+    host: string;
 }
