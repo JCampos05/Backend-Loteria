@@ -8,7 +8,7 @@
  *   npx tsx src/scripts/test-game-lifecycle.ts
  */
 import { GameLifecycleService, InvalidGameTransitionError } from '../application/game/GameLifecycleService';
-import { InMemoryGameRepository } from '../repositories/InMemoryGameRepository';
+import { InMemoryGameRepository } from '../Infrastructure/repositories/InMemoryGameRepository';
 
 async function main() {
     const repository = new InMemoryGameRepository();
