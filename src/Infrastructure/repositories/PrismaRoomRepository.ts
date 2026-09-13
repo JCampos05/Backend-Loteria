@@ -1,10 +1,11 @@
-import { PrismaClient, RoomStatus as PrismaRoomStatus } from "@prisma/client";
+import { RoomStatus as PrismaRoomStatus } from "@prisma/client";
 import { IRoomRepository } from "../../domain/repositories/IRoomRepository";
 import { Room } from "../../domain/entities/room";
 import { Player } from "../../domain/entities/player";
+import { prisma } from "../../config/prisma.client";
 
 export class PrismaRoomRepository implements IRoomRepository {
-    private readonly prisma = new PrismaClient(); //conexion con la base de datos, distanciando directamente a prisma
+    private readonly prisma = prisma;
 
     async create(room: Room, HostPlayer: Player): Promise<{ room: Room; Host: Player }> {
         const [createdRoom, createdHost] = await this.prisma.$transaction([ // creacion de la sala, si hay alguna caida de internet del host este cancelara todo el poceso de creacion
@@ -82,7 +83,7 @@ export class PrismaRoomRepository implements IRoomRepository {
 
     async findPlayerById(id: string): Promise<Player | null> {       // busca un jugador por su id, si no lo encuentra retorna null
         const prismaPlayer = await this.prisma.player.findUnique({ //crea una instancia de prisma para buscar el jugador en la base de datos
-            where: {id}, //lo busca mediante su id, que es unico para cada jugador
+            where: { id }, //lo busca mediante su id, que es unico para cada jugador
         });
         return prismaPlayer as Player | null; //retorna el jugador que se encontro en la base de datos
     }
@@ -90,7 +91,7 @@ export class PrismaRoomRepository implements IRoomRepository {
     async getPlayersByRoomId(roomId: Room): Promise<Player[]> { // devuelve un array con todos los jugadores que estan en la sala, ordenados por fecha de ingreso
         const prismaPlayer = await this.prisma.player.findMany({
             where: { roomId: roomId.id }, // busca a los jugadores que estan en la sala mediante el id de la sala
-            orderBy: { joinedAt: 'asc'}, // los ordena de manera ascendente por la fecha
+            orderBy: { joinedAt: 'asc' }, // los ordena de manera ascendente por la fecha
         });
         return prismaPlayer as unknown as Player[];
     }

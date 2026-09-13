@@ -2,12 +2,10 @@ import 'dotenv/config'
 import { z } from 'zod'
 import { buildDatabaseUrl, buildDirectDatabaseUrl } from './database-url';
 
-
-
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production']).default('development'),
     PORT: z.coerce.number().int().positive().default(3000),
-
+    CORS_ORIGIN: z.string().default('*'),
 
     DB_HOST: z.string().min(1, 'Se requiere DB_HOST'),
     DB_PORT: z.coerce.number().positive().default(6543),
@@ -56,6 +54,7 @@ function loadEnv() {
         nodoEnv: data?.NODE_ENV,
         isProduction: data?.NODE_ENV === 'production',
         port: data?.PORT,
+        corsOrigin: data?.CORS_ORIGIN,
         database: {
             host: data?.DB_HOST,
             port: data?.DB_PORT,

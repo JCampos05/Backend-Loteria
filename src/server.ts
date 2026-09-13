@@ -1,7 +1,7 @@
 import { createServer as createHttpServer } from 'node:http';
 import express from 'express';
-import { Server as SocketIOServer } from 'socket.io';
 import { indexRouter } from './routes/index.routes';
+import { createSocketServer } from './realtime/socket-server';
 
 export function createServer() {
     const app = express();
@@ -10,11 +10,7 @@ export function createServer() {
     app.use('/api', indexRouter);
 
     const httpServer = createHttpServer(app);
-    const io = new SocketIOServer(httpServer, {
-        cors: {
-            origin: '*',
-        },
-    });
+    const io = createSocketServer(httpServer);
 
     return { app, httpServer, io };
 }
